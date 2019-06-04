@@ -41,10 +41,31 @@ RSpec.describe Oystercard do
       expect(oystercard.deduct(5)).to eq(15)
     end 
   end
+  
+  describe '#touch_in' do
+
+    it 'raise an aerror if balance lower than minimum' do
+      expect { subject.touch_in }.to raise_error 'You\'re balance is too low'
+    end
+
+    it 'returns true' do
+      subject.top_up(2.5)
+      expect(subject.touch_in).to eq true
+    end
+
+  end
+
+  describe '#touch_out' do
+
+    it 'returns false' do
+      expect(subject.touch_out).to eq false
+    end
+  end
 
   describe '#in_jounery?' do
 
-    it 'return true if in journey' do 
+    it 'return true if in journey' do
+      subject.top_up(2.5)
       subject.touch_in
       expect(subject).to be_in_journey
     end
