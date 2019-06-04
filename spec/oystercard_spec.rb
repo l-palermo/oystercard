@@ -1,6 +1,7 @@
 require 'oystercard'
 
 RSpec.describe Oystercard do
+  let(:station) { double :station }
 
   describe '#balance' do
 
@@ -15,10 +16,10 @@ RSpec.describe Oystercard do
   end
 
   describe 'if #top up #exceed_limit?' do
+
     it 'returns true if balance exceeded' do
       expect(subject.exceed_limit?(91)).to eq true
     end
-
   end
 
   describe '#top_up' do
@@ -44,18 +45,22 @@ RSpec.describe Oystercard do
   
   describe '#touch_in' do
 
-    it 'raise an aerror if balance lower than minimum' do
-      expect { subject.touch_in }.to raise_error 'You\'re balance is too low'
-    end
-
-    it 'returns true' do
+    it 'store the station name' do
       subject.top_up(2.5)
-      expect(subject.touch_in).to eq true
+      subject.touch_in(station)
+      expect(subject.entry_station).to eq(station)
     end
 
+    it 'raise an aerror if balance lower than minimum' do
+      expect { subject.touch_in(station) }.to raise_error 'You\'re balance is too low'
+    end
   end
 
   describe '#touch_out' do
+
+    it 'eq @entry_station to nil' do
+      expect(subject.entry_station).to eq nil
+    end
 
     it 'deduct minimum fair' do
       minimum = Oystercard::MINIMUM_FAIR
@@ -63,8 +68,8 @@ RSpec.describe Oystercard do
       expect { subject.touch_out }.to change { subject.balance }.by -2.5
     end
 
-    it 'returns false' do
-      expect(subject.touch_out).to eq false
+    it 'returns nil' do
+      expect(subject.touch_out).to eq nil
     end
   end
 
@@ -72,7 +77,7 @@ RSpec.describe Oystercard do
 
     it 'return true if in journey' do
       subject.top_up(2.5)
-      subject.touch_in
+      subject.touch_in(station)
       expect(subject).to be_in_journey
     end
 
