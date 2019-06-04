@@ -33,14 +33,14 @@ RSpec.describe Oystercard do
     end
   end
 
-  describe '#deduct' do
+  # describe '#deduct' do
 
-    it 'takes an argument and deducts it from the balance' do
-      oystercard = Oystercard.new
-      oystercard.top_up(20)
-      expect(oystercard.deduct(5)).to eq(15)
-    end 
-  end
+  #   it 'takes an argument and deducts it from the balance' do
+  #     oystercard = Oystercard.new
+  #     oystercard.top_up(20)
+  #     expect(oystercard.deduct(5)).to eq(15)
+  #   end 
+  # end
   
   describe '#touch_in' do
 
@@ -56,6 +56,12 @@ RSpec.describe Oystercard do
   end
 
   describe '#touch_out' do
+
+    it 'deduct minimum fair' do
+      minimum = Oystercard::MINIMUM_FAIR
+      subject.top_up(2.5)
+      expect { subject.touch_out }.to change { subject.balance }.by -2.5
+    end
 
     it 'returns false' do
       expect(subject.touch_out).to eq false

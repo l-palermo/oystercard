@@ -2,6 +2,7 @@ class Oystercard
   attr_reader :balance, :BALANCE_LIMIT
   BALANCE_LIMIT = 90
   MINIMUM_BALANCE = 2.5
+  MINIMUM_FAIR = 2.5
 
   def initialize
     @balance = 0
@@ -18,10 +19,6 @@ class Oystercard
     @balance += number
   end
 
-  def deduct(number)
-    @balance -= number
-  end
-
   def touch_in
     raise 'You\'re balance is too low' if @balance < MINIMUM_BALANCE
 
@@ -29,11 +26,17 @@ class Oystercard
   end
 
   def touch_out
+    deduct(MINIMUM_FAIR)
     @in_journey = false
   end
 
   def in_journey?
     @in_journey
+  end
+
+  private
+  def deduct(number)
+    @balance -= number
   end
   
 end
