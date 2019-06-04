@@ -42,4 +42,18 @@ RSpec.describe Oystercard do
     end 
   end
 
+  describe '#in_jounery?' do
+
+    it 'return true if in journey' do 
+      subject.touch_in
+      expect(subject).to be_in_journey
+    end
+
+    it 'return false if not in journey' do
+      subject.touch_out
+      expect(subject).to_not be_in_journey
+    end
+
+  end
+
 end
