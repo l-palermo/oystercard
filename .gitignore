@@ -1,1 +1,4 @@
 coverage
+oyster_flow.rb
+station.rb
+station_spec.rb

@@ -3,6 +3,10 @@ require 'oystercard'
 RSpec.describe Oystercard do
   let(:station) { double :station }
 
+  it 'checks that the card object is initialized with no journeys' do 
+    expect(subject.journey_list).to be_empty 
+  end
+
   describe '#balance' do
 
     it 'responds to #balance' do
@@ -12,7 +16,6 @@ RSpec.describe Oystercard do
     it 'has zero when intialized' do
       expect(subject.balance).to eq(0)
     end
-
   end
 
   describe 'if #top up #exceed_limit?' do
@@ -45,10 +48,15 @@ RSpec.describe Oystercard do
   
   describe '#touch_in' do
 
-    it 'store the station name' do
+    it 'it returns an array with the entry station' do
       subject.top_up(2.5)
       subject.touch_in(station)
-      expect(subject.entry_station).to eq(station)
+      expect(subject.current_journey).to eq([station])
+    end
+
+    it 'returns the station name' do
+      subject.top_up(2.5)
+      expect(subject.touch_in(station)).to eq(station)
     end
 
     it 'raise an aerror if balance lower than minimum' do
@@ -58,18 +66,14 @@ RSpec.describe Oystercard do
 
   describe '#touch_out' do
 
-    it 'eq @entry_station to nil' do
-      expect(subject.entry_station).to eq nil
+    it 'returns station name' do
+      expect(subject.touch_out(station)).to eq(station)
     end
 
     it 'deduct minimum fair' do
       minimum = Oystercard::MINIMUM_FAIR
       subject.top_up(2.5)
-      expect { subject.touch_out }.to change { subject.balance }.by -2.5
-    end
-
-    it 'returns nil' do
-      expect(subject.touch_out).to eq nil
+      expect { subject.touch_out(station) }.to change { subject.balance }.by -2.5
     end
   end
 
@@ -82,10 +86,21 @@ RSpec.describe Oystercard do
     end
 
     it 'return false if not in journey' do
-      subject.touch_out
+      subject.top_up(2.5)
+      subject.touch_in(station)
+      subject.touch_out(station)
       expect(subject).to_not be_in_journey
     end
+  end
 
+  describe '#store' do
+
+    it 'return @journey_list' do
+      subject.top_up(2.5)
+      subject.touch_in(station)
+      subject.touch_out(station)
+      expect(subject.journey_list).to eq({:journey1 => [station, station]})
+    end
   end
 
 end

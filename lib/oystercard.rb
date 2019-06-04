@@ -1,12 +1,14 @@
 class Oystercard
-  attr_reader :balance, :BALANCE_LIMIT, :entry_station
+  attr_reader :balance, :journey_list, :current_journey
   BALANCE_LIMIT = 90
   MINIMUM_BALANCE = 2.5
   MINIMUM_FAIR = 2.5
 
   def initialize
     @balance = 0
-    @entry_station
+    @journey_list = {}
+    @current_journey = []
+    @journey_number = 0
   end
 
   def exceed_limit?(number)
@@ -22,16 +24,28 @@ class Oystercard
   def touch_in(station)
     raise 'You\'re balance is too low' if @balance < MINIMUM_BALANCE
 
-    @entry_station = station
+    store(station)
+    station
   end
 
-  def touch_out
+  def touch_out(station)
     deduct(MINIMUM_FAIR)
-    @entry_station = nil
+    store(station)
+    station
   end
 
   def in_journey?
-    @entry_station != nil ? true : false
+    !@current_journey.empty? ? true : false
+  end
+
+  def store(station)
+    @current_journey << station
+    if @current_journey.length == 2
+      key = "journey#{@journey_number + 1}".to_sym
+      @journey_list[key] = @current_journey
+      @journey_number += 1
+      @current_journey = []
+    end
   end
 
   private
