@@ -10,5 +10,4 @@ RSpec.describe Station do
   it 'returns zone number' do
     expect(subject.zone).to eq(2)
   end
-
 end
